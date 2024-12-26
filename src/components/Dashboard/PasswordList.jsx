@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import AddEditPassword from './AddEditPassword';
 
 const PasswordList = () => {
+  
   const token = localStorage.getItem('token');
   const [accounts, setAccounts] = useState([]);
   const [editingAccount, setEditingAccount] = useState(null);
@@ -10,6 +11,8 @@ const PasswordList = () => {
   const [isMasterPasswordEntered, setIsMasterPasswordEntered] = useState(false); // Track if master password is entered
   const [isMasterPasswordVisible, setIsMasterPasswordVisible] = useState(true); // Track visibility of master password input
   const [isPasswordVisible, setIsPasswordVisible] = useState({}); // Track visibility of passwords
+  const [autofillUsername, setAutofillUsername] = useState(''); // State for autofill username
+  const [autofillPassword, setAutofillPassword] = useState(''); // State for autofill password
 
   // Fetch accounts when the component mounts
   useEffect(() => {
@@ -86,7 +89,11 @@ const PasswordList = () => {
   const copyToClipboard = (username, password) => {
     const textToCopy = `Username: ${username}\nPassword: ${password}`;
     navigator.clipboard.writeText(textToCopy)
-      .then(() => alert('Credentials copied to clipboard!'))
+      .then(() => {
+        alert('Credentials copied to clipboard!');
+        setAutofillUsername(username); // Set username for autofill
+        setAutofillPassword(password); // Set password for autofill
+      })
       .catch(err => console.error('Failed to copy: ', err));
   };
 
@@ -104,7 +111,7 @@ const PasswordList = () => {
             onChange={(e) => setMasterPassword(e.target.value)}
             required
           />
-          <button onClick={handleMasterPasswordSubmit}>Submit Master Password</button>
+          <button type='submit' onClick={handleMasterPasswordSubmit}>Submit Master Password</button>
         </div>
       )}
 
@@ -118,7 +125,7 @@ const PasswordList = () => {
                 <h3 className="password-card__title">{account.account_type}</h3> 
               </div>
               <div className="password-card__content"> 
-                <p><b>Website:</b> {account.website}</p>
+                <p><b>Website:</b> <a href={account.website}>{account.website}</a></p>
                 <p><b>Username: </b>{account.username}</p>
                 <p>
                   <b>Password: </b>
@@ -137,7 +144,7 @@ const PasswordList = () => {
                     <i className="fas fa-edit"></i> 
                   </button>
                   <button 
-                    onClick={() => handleDelete(account.account_id)} 
+                    onClick={() => handleDelete(account.id)} 
                     className="delete" 
                   >
                     <i className="fas fa-trash"></i> 

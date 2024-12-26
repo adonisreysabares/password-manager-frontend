@@ -7,6 +7,7 @@ const AddEditPassword = ({ onSave, existingData }) => {
   const [username, setUsername] = useState(existingData ? existingData.username : '');
   const [password, setPassword] = useState(existingData ? existingData.password : '');
   const [masterPassword, setMasterPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -57,6 +58,21 @@ const AddEditPassword = ({ onSave, existingData }) => {
     }
   };
 
+  const generateStrongPassword = () => {
+    const length = 12; // Length of the password
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+    let password = "";
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * charset.length);
+      password += charset[randomIndex];
+    }
+    setPassword(password);
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <div className="add-edit-password">
       <h2>{existingData ? 'Edit Password' : 'Add New Password'}</h2>
@@ -82,13 +98,23 @@ const AddEditPassword = ({ onSave, existingData }) => {
           onChange={(e) => setUsername(e.target.value)}
           required
         />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <div className="password-input-container">
+          <div className="password-container" style={{ position: 'relative' }}>
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              style={{ paddingRight: '40px' }}
+            />
+            <button className="btn-visible" type="button" onClick={togglePasswordVisibility} style={{ position: 'absolute', right: '10px', top: '40%', transform: 'translateY(-50%)' }}>
+              <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+            </button>
+          </div>
+
+          <button type="btn-generator" onClick={generateStrongPassword}>Generate</button>
+        </div>
         <input
           type="password"
           placeholder="Master Password"
